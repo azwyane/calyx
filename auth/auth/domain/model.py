@@ -1,21 +1,27 @@
 from pydantic import BaseModel
-
-class AbstractDomain(BaseModel):
+import random
+class AbstractEntity(BaseModel):
     pass
 
-class User(AbstractDomain):
-    id: int
-    name: str
-    age: int 
+class UserResponse(AbstractEntity):
+    id: int 
+    username: str
+    email: str 
+class User(AbstractEntity):
+    id: int 
+    username: str
+    email: str 
+    password: str
 
     def capitalize_name(self):
-        self.name = self.name.capitalize()
+        self.username = self.username.capitalize()
         return
 
 def user_registration_factory(command):
     user = User(
-            id=command.id,
-            name=command.name,
-            age=command.age
+            id = random.randint(1,10000),
+            username=command.user.username,
+            email=command.user.email,
+            password=command.credentials.password1
             )
     return user

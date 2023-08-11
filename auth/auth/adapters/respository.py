@@ -1,18 +1,19 @@
 from abc import ABC, abstractmethod
 from auth.domain import model
+
 class AbstractRepository(ABC):
     
     @abstractmethod
     def get(self,id):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def add(self,user:model.User):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def update(self,user:model.User):
-        pass
+        raise NotImplementedError
 
 class FakeUserRepository(AbstractRepository):
     
@@ -20,24 +21,32 @@ class FakeUserRepository(AbstractRepository):
         self.db = [
                     {
                         "id" : 1,
-                        "name" : "azwyane",
-                        "age"  : 22
+                        "username" : "azwyane",
+                        "email"  : "iexist.com",
+                        "password": "mypassword"
                     }
                 ]
 
     def get(self,id):
         for user in self.db:
             if user["id"] == id:
-                return model.User(**user)
+                return model.UserResponse(**user)
         else:
             return None
 
     def add(self,user:model.User):
         self.db.append(user)
-        return user
+        return model.UserResponse(**user.dict())
 
     def update(self,user:model.User):
         self.db.append(user)
-        return user
+        return model.UserResponse(**user.dict())
+
+    def get_by_email(self,email):
+        for user in self.db:
+            if user['email'] == email:
+                return model.UserResponse(**user)
+        else:
+            return None
 class UserRespository():
     pass

@@ -1,28 +1,31 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from auth.domain import command, model
 from auth.service_layer import handlers
+from auth.adapters import respository
 
 router = APIRouter()
 
-user_service = handlers.UserService()
+repo = respository.FakeUserRepository()
+user_service = handlers.UserService(repo=repo)
 
 @router.get("/user")
 def view_user():
-    user = user_service.indentification(id=2)
+    #TODO get bearer token and validate -> authorized() -> return user instance
+    # get user id from user instance
+
+    user = user_service.indentification(id=1) #pass id = user.id
     return user
 
-@router.get("/user/create/") #get method just for demo
-def create_user():
-    payload = {
-        "id" : 2,
-        "name" : "azwyane",
-        "age"  : 22
-    }
-    registercommand = command.RegisterUserCommand(**payload)
+@router.post("/user/create/") 
+def create_user(registercommand:command.RegisterUserCommand):
     user_model = model.user_registration_factory(registercommand)
+    user_id_db = repo.get_by_email(email=user_model.email)
+    if user_id_db:
+        raise HTTPException(status_code=409, detail="User already exists with provided email")
     user = user_service.register_user(user_model)
     return user
+    
 
 @router.get("/user/update/") #get method just for demo
 def update_user():
