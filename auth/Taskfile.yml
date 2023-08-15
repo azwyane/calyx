@@ -1,0 +1,11 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+
+
+tasks:
+  runserver:
+    cmds:
+        - source .venv/bin/activate && uvicorn auth.main:app --reload --port 8000
